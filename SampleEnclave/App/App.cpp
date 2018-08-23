@@ -253,12 +253,13 @@ void ocall_print_string(const char *str)
 }
 void ocall_return_file(char *file, int output_length)
 {
-	printf("\nThe whole cipher is:\n");
+	printf("The whole cipher in uint8 is:\n");
 	for (int i = 0; i < output_length;i++)
 	{
 		printf("%hhu\t", file[i]);
 	}
-	std::ofstream output("C:/Users/GLASER_M/Desktop/SampleEnclave/Debug/cipher.ctxt",std::ios::binary);
+	printf("\nThe first 4 bytes are the length. The next 12 bytes are the IV and than comes the ciphertext with the described length. At the end the mac has a length of 16 bytes\n");
+	std::ofstream output("../cipher.ctxt",std::ios::binary);
 	if (output.is_open())
 	{
 		output.write(file, output_length);
@@ -268,7 +269,13 @@ void ocall_return_file(char *file, int output_length)
 }
 void ocall_return_plain(char *file, int output_length)
 {
-	std::ofstream output("C:/Users/GLASER_M/Desktop/SampleEnclave/Debug/plain.txt");
+	printf("\nThe cipherfile is decrypted and the output is\n");
+	for (int i = 0; i < output_length;i++)
+	{
+		printf("%c", file[i]);
+	}
+	printf("\nIt is saved at ${YourProjectPath}/SampleEnclave/plain.txt.\n");
+	std::ofstream output("../plain.txt");
 	if (output.is_open())
 	{
 		output.write(file, output_length);
@@ -357,7 +364,7 @@ int SGX_CDECL main(int argc, char *argv[])
 	/*Read File for encryption input*/
 	char * text;
 	int file_length;
-	std::ifstream input("C:/Users/GLASER_M/Desktop/SampleEnclave/Debug/test.txt");
+	std::ifstream input("../test.txt");
 	if (input.is_open())
 	{
 		int begin = input.tellg();										//first position
@@ -368,6 +375,12 @@ int SGX_CDECL main(int argc, char *argv[])
 		text = new char[file_length];
 		input.read(text, file_length);
 		input.close();
+		printf("The file text.txt within the path ${YourProjectPath}/SampleEnclave was read.\n");
+		for (int i = 0; i < file_length;i++)
+		{
+			printf("%c",text[i]);
+		}
+		printf("\n");
 	}
 	else
 	{
@@ -384,6 +397,7 @@ int SGX_CDECL main(int argc, char *argv[])
 	sgx_status_t ecall_ret = SGX_SUCCESS;
 
 	/*Start the encryption process via the ecall function*/
+	printf("The encrpytion process starts!\n");
 	ret = ecall_AuditLoggingEnc_sample(global_eid, &ecall_ret, text, file_length);
 
 	/*Clean everything*/
@@ -394,7 +408,7 @@ int SGX_CDECL main(int argc, char *argv[])
 	global_eid = 0;
 
 	/*Read the file for the decryption process*/
-	std::ifstream inputCipher("C:/Users/GLASER_M/Desktop/SampleEnclave/Debug/cipher.ctxt", std::ios::binary);  //caution cipher is a binary
+	std::ifstream inputCipher("../cipher.ctxt", std::ios::binary);  //caution cipher is a binary
 	if (inputCipher.is_open())
 	{
 		int begin = inputCipher.tellg();										//first position

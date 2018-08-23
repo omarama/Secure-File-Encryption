@@ -160,12 +160,6 @@ sgx_status_t ecall_AuditLoggingDec_sample(char *input, size_t length)
 	getKey(group_key, sizeof(group_key));																			//take key from untrusted 															
 	memcpy(cipherinput, input, length);																						//copy input into sgx memory space
 
-	printf("\nThe whole cipher is:\n");
-	for (int i = 0; i < length;i++)
-	{
-		printf("%hhu\t", cipherinput[i]);
-	}
-
 	/*encryption sequence*/
 	res = decryptionBlock(decrypted, cipherinput, group_key);															//open decryption block
 	if (res != SGX_SUCCESS)																							//No success at decryptin
@@ -178,14 +172,11 @@ sgx_status_t ecall_AuditLoggingDec_sample(char *input, size_t length)
 		manage.encryption_decryption = true;																//set the decision variable to true
 	}
 
-	printf("\n");
-	for (int i = 0; i < decrypted.length_cipher;i++)
-	{
-		printf("%c", decrypted.plain[i]);
-	}
-	printf("\n");
 	/*Return the Cipher or Plaintext file*/
-	returnPlain(decrypted);	
+	if (manage.encryption_decryption == true)
+	{
+		returnPlain(decrypted);
+	}
 
 	/*free dynamic memory*/
 	free(cipherinput);
