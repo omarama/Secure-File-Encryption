@@ -1,0 +1,3 @@
+Hallo,
+ich bin eine Testfile die verwendet wirdum eine sichere Enklave zu entwickeln.
+Das ist der naechste test. Und noch einer
