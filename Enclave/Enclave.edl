@@ -1,0 +1,45 @@
+/* Enclave.edl - Top EDL file. */
+
+enclave {
+    
+    include "user_types.h" /* buffer_t */
+
+    /* Import ECALL/OCALL from sub-directory EDLs.
+     *  [from]: specifies the location of EDL file. 
+     *  [import]: specifies the functions to import, 
+     *  [*]: implies to import all functions.
+     */
+    
+    from "Edger8rSyntax/Types.edl" import *;
+    from "Edger8rSyntax/Pointers.edl" import *;
+    from "Edger8rSyntax/Arrays.edl" import *;
+    from "Edger8rSyntax/Functions.edl" import *;
+
+    from "TrustedLibrary/Libc.edl" import *;
+    from "TrustedLibrary/Libcxx.edl" import ecall_exception, ecall_map;
+    from "TrustedLibrary/Thread.edl" import *;
+
+    /* 
+     * ocall_print_string - invokes OCALL to display string buffer inside the enclave.
+     *  [in]: copy the string buffer to App outside.
+     *  [string]: specifies 'str' is a NULL terminated buffer.
+     */
+    untrusted {
+        void ocall_print_string([in, string] const char *str);
+		void ocall_return_file([in,size=outputLength]char *file, int outputLength);
+		void ocall_return_plain([in,size=outputLength]char *file, int outputLength);
+		void ocall_get_key([out,size=keyLength]char *file, int keyLength);
+		void ocall_return_key([in,size=keyLength]char *file, int keyLength);
+		long int ocall_get_timestamp();
+		void ocall_get_file([out,size=textLength]char *text,int textLength,[in,size=pathLength]const char *path,int pathLength);
+		void ocall_get_binary([out,size=textLength]char *text,int textLength,[in,size=pathLength]const char *path,int pathLength);
+		void ocall_write_file([in,size=textLength]char *text,int textLength,[in,size=pathLength]const char *path, int pathLength);
+		void ocall_write_binary([in,size=textLength]char *text,int textLength, [in,size=pathLength] const char* path, int pathLength);
+		void ocall_get_binary_file_size([in,size=pathLength]const char *path, int pathLength, [out] int *size);
+    };
+	trusted {
+		public sgx_status_t ecall_AuditLoggingEnc_sample([in,size=length]char *input, size_t length, [in,size=lengthFileName] char *fileName, int lengthFileName);
+		public sgx_status_t ecall_AuditLoggingDec_sample([in,size=length]char *input, size_t length, [in,size=lengthFileName] char *fileName, int lengthFileName);
+	};
+
+};

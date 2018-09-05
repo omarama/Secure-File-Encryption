@@ -1,0 +1,5 @@
+Hallo, 
+das ist eine Testfile, um eine Enklavenanwendung durchzuspielen. 
+Ich hoffe es hat alles geklappt. 
+Viele Gruesse
+Manuel 
